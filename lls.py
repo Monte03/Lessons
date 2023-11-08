@@ -1,5 +1,5 @@
 import string
-import random
+import secrets
 
 class User:
     def __init__(self, username, password, email):
@@ -13,7 +13,7 @@ class User:
             print("Ваш пароль змінено")
         else:
             print("Новий пароль співпадає зі старим паролем")
-  
+
 
 class Admin(User):
     def __init__(self, username, password, email):
@@ -28,17 +28,19 @@ class Admin(User):
             print("Користувач вже зареєстрований")
     
     def remove_users(self, user_remove):
-        if self.user_remove in self.managed_users:
+        if user_remove in self.managed_users:
             self.managed_users.remove(user_remove)
             print("Користувача видалено")
         else:
             print("Користувача не було знайдено")
     
     def reset_users_password(self, user_reset, length=12, use_digits=True, use_spec_chars=True):
-        new_password = self.gen_passwd(length, use_digits, use_spec_chars)
-        user_reset.change_password(new_password)
-        print("Пароль користувача {user_reset.username} було скинуто")
-        
+        if user_reset in self.managed_users:
+            new_password = self.gen_passwd(length, use_digits, use_spec_chars)
+            user_reset.change_password(new_password)
+            print(f"Пароль користувача {user_reset.username} було скинуто")
+    
+    @staticmethod
     def gen_passwd(
         length=12,
         use_digits=True,
@@ -51,7 +53,7 @@ class Admin(User):
             chars+=string.punctuation
         
         password = ''.join(
-            random.choice(chars)
+            secrets.choice(chars)
             for _ in range(length)
         )
         return password
@@ -65,10 +67,10 @@ admin1 = Admin('admin1', 'adminpassword', 'admin1@example.com')
 admin1.add_user(user1)
 
 # Пользователь пытается сменить пароль на тот же самый
-user1.change_password('password123', 'password123')  # Должно выдать ошибку
+user1.change_password('password123')  # Должно выдать ошибку
 
 # Админ сбрасывает пароль пользователя
-admin1.reset_user_password(user1)
+admin1.reset_users_password(user1)
 
 # Вывод списка пользователей администратора
 print(admin1.managed_users)
