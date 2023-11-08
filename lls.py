@@ -40,7 +40,7 @@ class Admin(User):
     def reset_users_password(self, user_reset, length=12, use_digits=True, use_spec_chars=True):
         if user_reset in self.managed_users:
             new_password = self.gen_passwd(length, use_digits, use_spec_chars)
-            user_reset.change_password(new_password)
+            user_reset.change_password(user_reset.password, new_password)
             print(f"Пароль користувача {user_reset.username} було скинуто")
     
     @staticmethod
