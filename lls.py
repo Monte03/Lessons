@@ -7,12 +7,15 @@ class User:
         self.password = password
         self.email = email
     
-    def change_password(self, new_password):
-        if new_password != self.password:
-            self.password = new_password
-            print("Ваш пароль змінено")
+    def change_password(self, old_password, new_password):
+        if old_password == self.password:
+            if new_password != old_password:
+                self.password = new_password
+                print("Ваш пароль змінено")
+            else:
+                print("Новий пароль співпадає зі старим паролем")
         else:
-            print("Новий пароль співпадає зі старим паролем")
+            print("Старий пароль невірний")
 
 
 class Admin(User):
@@ -67,7 +70,7 @@ admin1 = Admin('admin1', 'adminpassword', 'admin1@example.com')
 admin1.add_user(user1)
 
 # Пользователь пытается сменить пароль на тот же самый
-user1.change_password('password123')  # Должно выдать ошибку
+user1.change_password('password123', 'password123')  # Должно выдать ошибку
 
 # Админ сбрасывает пароль пользователя
 admin1.reset_users_password(user1)
