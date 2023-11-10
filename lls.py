@@ -7,6 +7,9 @@ class User:
         self.password = password
         self.email = email
     
+    def __str__(self):
+        return f"Користувач {self.username} {self.email}"
+    
     def change_password(self, old_password, new_password):
         if old_password == self.password:
             if new_password != old_password:
@@ -76,4 +79,6 @@ user1.change_password('password123', 'password123')  # Должно выдать
 admin1.reset_users_password(user1)
 
 # Вывод списка пользователей администратора
-print(admin1.managed_users)
+lists = admin1.managed_users
+for user in lists:
+    print(user)
