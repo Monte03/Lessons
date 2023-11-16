@@ -3,7 +3,7 @@
 financial_data = []
 
 def add_transaction():
-    print("Введіть наступні дані ")
+    print("Введіть наступні дані")
     amount = float(input("Сумма: "))
     category = input("Категорія: ")
     date = input("Дата: ")
@@ -37,12 +37,21 @@ def remove_transaction():
     except ValueError:
         print("Було введене не число.")
 
+def reports_transaction():
+    total_income = sum(transaction['amount'] for transaction in financial_data if transaction['amount'] > 0)
+    total_expense = sum(transaction['amount'] for transaction in financial_data if transaction['amount'] < 0)
+    
+    print("Звіт")
+    print(f"Загальний дохід: {total_income}")
+    print(f"Загальні витрати: {total_expense}")
+
 while True:
     print("""
 1. Додати транзакцію
 2. Переглянути транзакції
 3. Видалити транзакцію
-4. Вийти
+4. Загальний звіт
+5. Вийти
 """)
     
     try:
@@ -58,6 +67,8 @@ while True:
     elif choice == 3:
         remove_transaction()
     elif choice == 4:
+        reports_transaction()
+    elif choice == 5:
         print("Программа завершена.")
         break
     else:
