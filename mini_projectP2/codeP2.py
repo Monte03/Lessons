@@ -1,5 +1,6 @@
 # Проект "Организатор личных финансов"
 
+import os
 import json
 
 # зберігання даних та шаблон транзакцій
@@ -14,10 +15,12 @@ transaction_template = {
         "Здоровʼя": None,
         "Розваги": None
     },
-    "date": None
+    "date": None,
+    "month": None
 }
 
-file_path = 'financial_dataP2.json'
+file_name = 'mini_projectP2/financial_dataP2.json'
+file_path = os.path.join(os.getcwd(), file_name)
 
 # зберігання даних у файл json 
 def save_data():
@@ -41,7 +44,10 @@ def add_transaction():
     print("Доступні категорії: ", ", ".join(transaction_template["category"].keys()))
     category = input("Категорія: ")
     date = input("Дата: ")
-    transaction = {'amount': amount, 'category': category, 'date': date}
+    month = date[3:10]
+    print(month)
+    
+    transaction = {'amount': amount, 'category': category, 'date': date, 'month': month}
     financial_data.append(transaction)
     print("Транзакція успішно додана!")
 
@@ -55,7 +61,19 @@ def view_transaction():
             num+=1
             print(f"{num}. Сума: {transaction['amount']}, категорія: {transaction['category']}, дата: {transaction['date']}")
 
-# аналіз транзакцій 
+# перегляд витрат за певний місяць
+def view_expenses_month():
+    view_month = input("Який місяць ви хочете переглянути (формат мм.рррр): ")
+    expenses_month = [i for i in financial_data if i['month'] == view_month]
+    
+    if not expenses_month:
+        print(f"Не має витрат за місяць {view_month}.")
+    else:
+        print(f"Витрати за місяць {view_month}")
+        for i, expenses in enumerate(expenses_month, 1):
+            print(f"{i}. Сума: {expenses['amount']}, категорія: {expenses['category']}, дата: {expenses['date']}")
+
+# аналіз транзакцій
 def analyze_transaction():
     income = 0
     total_expense = 0
@@ -67,20 +85,19 @@ def analyze_transaction():
 
         if amount > 0:
             income += amount
-        elif amount < 0:
+        
+        if amount < 0:
             total_expense += amount
             expense_categories[category] = expense_categories.get(category, 0) + amount
 
     print(f"Загальний дохід: {income}")
     print(f"Загальні витрати: {total_expense}")
-
-    if not expense_categories:
-        print("Список даних порожній.")
-    else:
+    
+    if total_expense != 0:
         print("\nВитрати по категоріям:")
         for category, expense in expense_categories.items():
             print(f"{category}: {expense}")
-
+        
 # видалення транзакцій
 def remove_transaction():
     if not financial_data:
@@ -107,7 +124,8 @@ while True:
 2. Переглянути транзакції
 3. Видалити транзакцію
 4. Аналіз транзакцій
-5. Зберегти та вийти
+5. Переглянути витрати за місяць
+6. Зберегти та вийти
 """)
     
     try:
@@ -125,6 +143,8 @@ while True:
     elif choice == 4:
         analyze_transaction()
     elif choice == 5:
+        view_expenses_month()
+    elif choice == 6:
         save_data()
         print("Збережено! Программа завершена.")
         break
