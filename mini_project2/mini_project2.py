@@ -1,16 +1,49 @@
 # Проект "Организатор личных финансов"
 
-financial_data = []
+import json
 
+# зберігання даних та шаблон транзакцій
+financial_data = []
+transaction_template = {
+    "amount": None,
+    "category": {
+        "Заробітня плата": None,
+        "Комунальні послуги": None,
+        "Транспорт": None,
+        "Їжа": None,
+        "Здоровʼя": None,
+        "Розваги": None
+    },
+    "date": None
+}
+
+# зберігання даних у файл json 
+def save_data():
+    with open('financial_data.json', 'w') as json_file:
+        json.dump(financial_data, json_file)
+
+# завантаження даних з файлу json
+def load_data():
+    global financial_data
+    try:
+        with open('financial_data.json', 'r') as json_file:
+            financial_data = json.load(json_file)
+    except FileNotFoundError:
+        financial_data = []
+
+# додавання транзакції
 def add_transaction():
     print("Введіть наступні дані")
     amount = float(input("Сумма: "))
+    
+    print("Доступні категорії: ", ", ".join(transaction_template["category"].keys()))
     category = input("Категорія: ")
     date = input("Дата: ")
     transaction = {'amount': amount, 'category': category, 'date': date}
     financial_data.append(transaction)
     print("Транзакція успішно додана!")
 
+# перегляд транзакцій
 def view_transaction():
     num=0
     if not financial_data:
@@ -19,7 +52,8 @@ def view_transaction():
         for transaction in financial_data:
             num+=1
             print(f"{num}. Сума: {transaction['amount']}, категорія: {transaction['category']}, дата: {transaction['date']}")
-        
+
+# видалення транзакцій
 def remove_transaction():
     if not financial_data:
         print("Список транзакцій порожній.")
@@ -37,13 +71,15 @@ def remove_transaction():
     except ValueError:
         print("Було введене не число.")
 
+# 
 def reports_transaction():
     total_income = sum(transaction['amount'] for transaction in financial_data if transaction['amount'] > 0)
     total_expense = sum(transaction['amount'] for transaction in financial_data if transaction['amount'] < 0)
     
-    print("Звіт")
     print(f"Загальний дохід: {total_income}")
     print(f"Загальні витрати: {total_expense}")
+
+load_data()
 
 while True:
     print("""
@@ -51,7 +87,7 @@ while True:
 2. Переглянути транзакції
 3. Видалити транзакцію
 4. Загальний звіт
-5. Вийти
+5. Зберегти та вийти
 """)
     
     try:
@@ -69,7 +105,8 @@ while True:
     elif choice == 4:
         reports_transaction()
     elif choice == 5:
-        print("Программа завершена.")
+        save_data()
+        print("Збережено! Программа завершена.")
         break
     else:
         print("Виникла помилка.")
