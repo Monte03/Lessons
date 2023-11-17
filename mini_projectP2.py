@@ -17,16 +17,18 @@ transaction_template = {
     "date": None
 }
 
+file_path = 'financial_dataP2.json'
+
 # зберігання даних у файл json 
 def save_data():
-    with open('financial_data.json', 'w') as json_file:
+    with open(file_path, 'w') as json_file:
         json.dump(financial_data, json_file)
 
 # завантаження даних з файлу json
 def load_data():
     global financial_data
     try:
-        with open('financial_data.json', 'r') as json_file:
+        with open(file_path, 'r') as json_file:
             financial_data = json.load(json_file)
     except FileNotFoundError:
         financial_data = []
@@ -52,6 +54,32 @@ def view_transaction():
         for transaction in financial_data:
             num+=1
             print(f"{num}. Сума: {transaction['amount']}, категорія: {transaction['category']}, дата: {transaction['date']}")
+
+# аналіз транзакцій 
+def analyze_transaction():
+    income = 0
+    total_expense = 0
+    expense_categories = {}
+
+    for transaction in financial_data:
+        amount = transaction['amount']
+        category = transaction['category']
+
+        if amount > 0:
+            income += amount
+        elif amount < 0:
+            total_expense += amount
+            expense_categories[category] = expense_categories.get(category, 0) + amount
+
+    print(f"Загальний дохід: {income}")
+    print(f"Загальні витрати: {total_expense}")
+
+    if not expense_categories:
+        print("Список даних порожній.")
+    else:
+        print("\nВитрати по категоріям:")
+        for category, expense in expense_categories.items():
+            print(f"{category}: {expense}")
 
 # видалення транзакцій
 def remove_transaction():
@@ -87,7 +115,8 @@ while True:
 2. Переглянути транзакції
 3. Видалити транзакцію
 4. Загальний звіт
-5. Зберегти та вийти
+5. Аналіз транзакцій
+6. Зберегти та вийти
 """)
     
     try:
@@ -105,6 +134,8 @@ while True:
     elif choice == 4:
         reports_transaction()
     elif choice == 5:
+        analyze_transaction()
+    elif choice == 6:
         save_data()
         print("Збережено! Программа завершена.")
         break
